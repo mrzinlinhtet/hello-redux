@@ -1,25 +1,57 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { createRef } from 'react';
+import { connect } from 'react-redux';
 
-function App() {
+const Item = ({ name, price }) => (
+  <li>{name}, ${price}</li>
+);
+
+const App = props => {
+  let nameRef = createRef();
+  let priceRef = createRef();
+
+  const add = () => {
+    props.add(
+      props.items.length + 1,
+      nameRef.current.value,
+      priceRef.current.value
+    );
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <ul>
+        {/* Move the closing parenthesis of props.items.map() to the correct position */}
+        {props.items.map(i => (
+          <Item
+            key={i.id}
+            name={i.name}
+            price={i.price}
+          />
+        ))}
+      </ul>
+      <input type="text" ref={nameRef} /><br />
+      <input type="text" ref={priceRef} /><br />
+      <button onClick={add}>Add</button>
     </div>
   );
-}
+};
 
-export default App;
+const stateToProps = state => {
+  return {
+    items: state
+  };
+};
+
+const dispatchToProps = dispatch => {
+  return {
+    add: (id, name, price) => {
+      dispatch({
+        type: 'ADD',
+        item: { id, name, price }
+      });
+    }
+  };
+};
+
+const ReduxApp = connect(stateToProps, dispatchToProps)(App);
+export default ReduxApp;
