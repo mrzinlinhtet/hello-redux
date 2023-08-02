@@ -1,36 +1,35 @@
-import React from 'react';
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link,
-    useParams,
-} from 'react-router-dom';
-
-const User = props => {
-    const { name } = useParams();
-
-    return (
-        <h1>Profile – {name}</h1>
-    )
-}
-
-const App = props => {
-    return (
-        <Router>
-            <div>
-                <ul>
-                    <li><Link to="/user/Alice">Alice</Link></li>
-                    <li><Link to="/user/Bob">Bob</Link></li>
-                </ul>
-                <div style={{background: 'cyan', padding: 20}}>
-                    <Switch>
-                        <Route path="/user/:name"><User /></Route>
-                    </Switch>
-                </div>
-            </div>
-        </Router>
-    );
-}
-
+import React, { useState, useEffect } from "react";
+const App = (props) => {
+  const [users, setUsers] = useState([]);
+  useEffect(() => {
+    fetch("https://reqres.in/api/users")
+      .then((res) => res.json())
+      .then((json) => {
+        setUsers(json.data);
+      });
+  }, []);
+  const add = () => {
+    fetch("https://reqres.in/api/users", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ first_name: "Tom" }),
+    })
+      .then((res) => res.json())
+      .then((tom) => {
+        setUsers([...users, tom]);
+      });
+  };
+  return (
+    <div>
+      <ul>
+        {users.map((u) => (
+          <li key={u.id}>{u.first_name}</li>
+        ))}
+      </ul>
+      <button onClick={add}>New User</button>
+    </div>
+  );
+};
 export default App;
