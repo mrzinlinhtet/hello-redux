@@ -1,57 +1,36 @@
-import React, { createRef } from 'react';
-import { connect } from 'react-redux';
+import React from 'react';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link,
+    useParams,
+} from 'react-router-dom';
 
-const Item = ({ name, price }) => (
-  <li>{name}, ${price}</li>
-);
+const User = props => {
+    const { name } = useParams();
+
+    return (
+        <h1>Profile – {name}</h1>
+    )
+}
 
 const App = props => {
-  let nameRef = createRef();
-  let priceRef = createRef();
-
-  const add = () => {
-    props.add(
-      props.items.length + 1,
-      nameRef.current.value,
-      priceRef.current.value
+    return (
+        <Router>
+            <div>
+                <ul>
+                    <li><Link to="/user/Alice">Alice</Link></li>
+                    <li><Link to="/user/Bob">Bob</Link></li>
+                </ul>
+                <div style={{background: 'cyan', padding: 20}}>
+                    <Switch>
+                        <Route path="/user/:name"><User /></Route>
+                    </Switch>
+                </div>
+            </div>
+        </Router>
     );
-  };
+}
 
-  return (
-    <div>
-      <ul>
-        {/* Move the closing parenthesis of props.items.map() to the correct position */}
-        {props.items.map(i => (
-          <Item
-            key={i.id}
-            name={i.name}
-            price={i.price}
-          />
-        ))}
-      </ul>
-      <input type="text" ref={nameRef} /><br />
-      <input type="text" ref={priceRef} /><br />
-      <button onClick={add}>Add</button>
-    </div>
-  );
-};
-
-const stateToProps = state => {
-  return {
-    items: state
-  };
-};
-
-const dispatchToProps = dispatch => {
-  return {
-    add: (id, name, price) => {
-      dispatch({
-        type: 'ADD',
-        item: { id, name, price }
-      });
-    }
-  };
-};
-
-const ReduxApp = connect(stateToProps, dispatchToProps)(App);
-export default ReduxApp;
+export default App;
